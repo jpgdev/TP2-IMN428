@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "imn428-tp2", "imn428-tp2\imn428-tp2.vcxproj", "{98C1AF56-FDAC-4AC5-A95D-A2710DA22352}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{98C1AF56-FDAC-4AC5-A95D-A2710DA22352}.Debug|Win32.ActiveCfg = Debug|Win32
+		{98C1AF56-FDAC-4AC5-A95D-A2710DA22352}.Debug|Win32.Build.0 = Debug|Win32
+		{98C1AF56-FDAC-4AC5-A95D-A2710DA22352}.Release|Win32.ActiveCfg = Release|Win32
+		{98C1AF56-FDAC-4AC5-A95D-A2710DA22352}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -11,3 +11,11 @@
 *.lai
 *.la
 *.a
+
+# Random . files qui sont creer par le MAC du prof
+*/Debug/*
+*Debug/*
+*/.*
+*/*/.*
+*/*/*/.*
+
