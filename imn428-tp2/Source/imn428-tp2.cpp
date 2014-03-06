@@ -356,10 +356,12 @@ void displayViewerWindow()
 	
 	/* Configurer une camera (projection perspective) */
 	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
 	gluPerspective(gCam.fovy, gCam.ratio, gCam.znear, gCam.zfar);
 
 	/* Positionner la camera */
 	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 	setCamera();
 
 	/* Afficher les lumieres */
@@ -443,13 +445,6 @@ void displayModelerWindow(void)
 */
 void setLighting( const Light& light )
 {
-	/*
-	** AJOUTER CODE ICI
-	**
-	** Cette fonction doit fixer les parametres de lumiere
-	** sous OpenGL (glLightf[v])
-	*/
-
 	glLightfv(light.lightID, GL_AMBIENT, light.ambient);
 	glLightfv(light.lightID, GL_DIFFUSE, light.diffuse);
 	glLightfv(light.lightID, GL_SPECULAR, light.specular);
@@ -471,14 +466,6 @@ void setLighting( const Light& light )
 */
 void setMaterial( const Material& mat )
 {
-	/*
-	** AJOUTER CODE ICI
-	**
-	** Cette fonction change les composantes du materiau courant
-	** (glMaterialf[v])
-	**
-	*/
-
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, mat.shininess);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, mat.ambient);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, mat.diffuse);
@@ -568,12 +555,6 @@ void keyboard( unsigned char key, int /* x */, int /* y */ )
 		break;
 
 		case 'L': /* Active ou desactive le mode d'eclairage */
-			/*
-			** AJOUTER CODE ICI
-			**
-			** Activer/deactiver l'illumination
-			**
-			*/
 			if(glIsEnabled(GL_LIGHTING)) 
 				glDisable(GL_LIGHTING);
 			else 
@@ -608,9 +589,13 @@ void keyboard( unsigned char key, int /* x */, int /* y */ )
 			int valWF;
 			glGetIntegerv(GL_POLYGON_MODE, &valWF);
 			if(valWF == GL_FILL)
-				glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+			{
+				//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+			}
 			else 
-				glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+			{
+				//glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+			}
 		break;
 
 		//Facteurs speculaire
