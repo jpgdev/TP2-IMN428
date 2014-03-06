@@ -242,19 +242,23 @@ void drawSweepObject(int resolution, bool displayNormals)
 
 	glColor4fv(gMaterials[1].diffuse);
 	
-	glBegin(GL_QUAD_STRIP);
-
 	for(int i = 0; i < nbPointsOnSilhouette-1; i++)
 	{
-		float size = 400.0/resolution;
-		for(int j = 0 ; j < resolution; j++)
+		glBegin(GL_QUAD_STRIP);
+
+		float size = 400.0 / resolution;
+		for(int j = 0 ; j <= resolution; j++)
 		{
-			glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200 + (size*j));
-			glVertex3f(silhouettePointArray[i+1].x, silhouettePointArray[i+1].y, -200 + (size*(j)));
+			glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200 + size*j);
+			glVertex3f(silhouettePointArray[i+1].x, silhouettePointArray[i+1].y, -200 + size*j);
 		}
+		/*glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200);
+		glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, 200);*/
+
+		glEnd();
 	}
 
-	glEnd();
+	
 
 }
 
@@ -276,19 +280,31 @@ void drawRevolutionObject(int resolution, bool displayNormals)
 
 	glColor4fv(gMaterials[1].diffuse);
 
-	glBegin(GL_QUAD_STRIP);
+	//glBegin(GL_QUAD_STRIP);
 
-	for(int i = 0; i < nbPointsOnSilhouette-1; i++)
-	{
-		for(int j = 0; j < 8; j++)
-		{			
-			/*glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200);
-			glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, 200);*/
+	//for(int i = 0; i < nbPointsOnSilhouette-1; i++)
+	//{
+	//	for(int j = 0; j < resolution; j++)
+	//	{			
+	//		/*glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200);
+	//		glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, 200);*/
+	//	}
+	//	
+	//}
+
+	//glEnd();
+
+	static const double pi = 3.1416;
+
+	for (int point=0; point<nbPointsOnSilhouette; point++) {
+		glBegin(GL_LINE_STRIP);
+		for (double theta = 0.0; theta <= 2.0 * pi; theta += pi/6.0) {
+			double x = cos(theta);
+			double z = sin(theta);
+			glVertex3d(silhouettePointArray[point].x*x, silhouettePointArray[point].y, -1.0-silhouettePointArray[point].x*z);
 		}
-		
-	}
-
-	glEnd();
+		glEnd();
+	}  
 }
 
 /*
@@ -344,6 +360,9 @@ void drawLights()
 	** etat inital ensuite
 	*/
 
+	GLboolean isOn;
+	glGetBooleanv(GL_LIGHTING, &isOn);
+
 
 	glDisable(GL_LIGHTING);
 
@@ -360,7 +379,7 @@ void drawLights()
 		glutSolidSphere(5,40,40);
 	glPopMatrix();
 
-	glEnable(GL_LIGHTING);
+	if(isOn) glEnable(GL_LIGHTING);
 
 }
 
@@ -478,6 +497,7 @@ void displayModelerWindow(void)
 */
 void setLighting( const Light& light )
 {
+	
 	glLightfv(light.lightID, GL_AMBIENT, light.ambient);
 	glLightfv(light.lightID, GL_DIFFUSE, light.diffuse);
 	glLightfv(light.lightID, GL_SPECULAR, light.specular);
@@ -531,7 +551,7 @@ void keyboard( unsigned char key, int /* x */, int /* y */ )
 
 		case 8: /* back space*/
 			nbPointsOnSilhouette--;
-			if(nbPointsOnSilhouette<0)nbPointsOnSilhouette=0;
+			if(nbPointsOnSilhouette<0) nbPointsOnSilhouette = 0;
 		break;
 		/*
 		 * Controle de la polygonisation des objets
@@ -588,7 +608,7 @@ void keyboard( unsigned char key, int /* x */, int /* y */ )
 		break;
 
 		case 'L': /* Active ou desactive le mode d'eclairage */
-			if(glIsEnabled(GL_LIGHTING)) 
+			if(glIsEnabled(GL_LIGHTING))
 				glDisable(GL_LIGHTING);
 			else 
 				glEnable(GL_LIGHTING);
@@ -619,10 +639,9 @@ void keyboard( unsigned char key, int /* x */, int /* y */ )
 
 
 		case 'w':
-			//TODO : Works but provokes an error
-			GLint valWF;
-			glGetIntegerv(GL_POLYGON_MODE, &valWF);
-			if(valWF == GL_FILL)
+			GLint valWF[2];
+			glGetIntegerv(GL_POLYGON_MODE, valWF);
+			if(valWF[1] == GL_FILL)
 				glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 			else 
 				glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
@@ -631,23 +650,23 @@ void keyboard( unsigned char key, int /* x */, int /* y */ )
 		//Facteurs speculaire
 		case 'z':
 			gMaterials[0].shininess -= 1.0;
-			if(gMaterials[0].shininess<1.0)
+			if(gMaterials[0].shininess < 1.0)
 				gMaterials[0].shininess =1.0;
 			break;
 		case 'Z':
 			gMaterials[0].shininess += 1.0;
-			if(gMaterials[0].shininess>128.0)
-				gMaterials[0].shininess =128.0;
+			if(gMaterials[0].shininess > 128.0)
+				gMaterials[0].shininess = 128.0;
 			break;
 		case 'x':
 			gMaterials[1].shininess -= 1.0;
-			if(gMaterials[1].shininess<1.0)
-				gMaterials[1].shininess =1.0;
+			if(gMaterials[1].shininess < 1.0)
+				gMaterials[1].shininess = 1.0;
 			break;
 		case 'X':
 			gMaterials[1].shininess += 1.0;
-			if(gMaterials[1].shininess>128.0)
-				gMaterials[1].shininess =128.0;
+			if(gMaterials[1].shininess > 128.0)
+				gMaterials[1].shininess = 128.0;
 			break;
 
 
@@ -716,7 +735,7 @@ void mouseButtonModeler( int button, int state, int x, int y )
 		indexSeclectedPoint=-1;
 		if(state == GLUT_DOWN)
 		{
-			for(i=0;i<nbPointsOnSilhouette;i++)
+			for(i=0; i < nbPointsOnSilhouette; i++)
 			{
 				dist=sqrt(pow(x-silhouettePointArray[i].x-500/2.0,2.0)+pow(-y-silhouettePointArray[i].y+500/2.0,2.0));
 				if(dist<15.0)
@@ -733,7 +752,7 @@ void mouseButtonModeler( int button, int state, int x, int y )
 	else if(button == GLUT_LEFT_BUTTON)
 	{
 		/* Enregistrer le point de controle (x,y) */
-		if(nbPointsOnSilhouette<NB_MAX_POINTS && state==GLUT_DOWN)
+		if(nbPointsOnSilhouette < NB_MAX_POINTS && state == GLUT_DOWN)
 		{
 			silhouettePointArray[nbPointsOnSilhouette].x=(int)(x-500/2.0);
 			silhouettePointArray[nbPointsOnSilhouette].y=(int)(500-y-500/2.0);
