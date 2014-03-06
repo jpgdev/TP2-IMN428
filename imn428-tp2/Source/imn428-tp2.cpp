@@ -199,7 +199,7 @@ void drawPlane( int n , bool displayNormals)
 
 	glColor4fv(gMaterials[0].diffuse);
 
-	int size = 200/n;
+	float size = 200.0/n;
 
 	glBegin(GL_QUADS);
 		for(int i = 0; i < n; i++)
@@ -207,7 +207,6 @@ void drawPlane( int n , bool displayNormals)
 			for(int j = 0; j < n; j++)
 			{
 				//TOP LEFT
-				glNormal3f(1,1,1);
 				glVertex4f(-100 + (size * i),		-100,	100 - (size * j),		1);
 
 				//TOP RIGHT
@@ -227,7 +226,6 @@ void drawPlane( int n , bool displayNormals)
 /*
 	Fonction qui affiche silhouette sous la forme d'une
 	'sweeping surface' dans le viewer 3D
-
 */
 void drawSweepObject(int resolution, bool displayNormals)
 {
@@ -241,6 +239,23 @@ void drawSweepObject(int resolution, bool displayNormals)
 	** Utilisez gMaterials[1].diffuse comme couleur (glColor4fv)
 	**
 	*/
+
+	glColor4fv(gMaterials[1].diffuse);
+	
+	glBegin(GL_QUAD_STRIP);
+
+	for(int i = 0; i < nbPointsOnSilhouette-1; i++)
+	{
+		float size = 400.0/resolution;
+		for(int j = 0 ; j < resolution; j++)
+		{
+			glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200 + (size*j));
+			glVertex3f(silhouettePointArray[i+1].x, silhouettePointArray[i+1].y, -200 + (size*(j)));
+		}
+	}
+
+	glEnd();
+
 }
 
 /*
@@ -258,6 +273,22 @@ void drawRevolutionObject(int resolution, bool displayNormals)
 	** utilisez gMaterials[1].diffuse comme couleur (glColor)
 	**
 	*/
+
+	glColor4fv(gMaterials[1].diffuse);
+
+	glBegin(GL_QUAD_STRIP);
+
+	for(int i = 0; i < nbPointsOnSilhouette-1; i++)
+	{
+		for(int j = 0; j < 8; j++)
+		{			
+			/*glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200);
+			glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, 200);*/
+		}
+		
+	}
+
+	glEnd();
 }
 
 /*
@@ -312,19 +343,21 @@ void drawLights()
 	** Vous devez desactiver l'eclairage et le remettre dans son
 	** etat inital ensuite
 	*/
+
+
 	glDisable(GL_LIGHTING);
 
 	glColor3fv(gLights[0].diffuse);
 	glPushMatrix();
 		glTranslatef(gLights[0].position[0], gLights[0].position[1], gLights[0].position[2]);
-		glutSolidSphere(25,50,50);
+		glutSolidSphere(10,50,50);
 	glPopMatrix();
 
 
 	glColor3fv(gLights[1].diffuse);
 	glPushMatrix();
 		glTranslatef(gLights[1].position[0], gLights[1].position[1], gLights[1].position[2]);
-		glutSolidSphere(10,40,40);
+		glutSolidSphere(5,40,40);
 	glPopMatrix();
 
 	glEnable(GL_LIGHTING);
@@ -576,7 +609,7 @@ void keyboard( unsigned char key, int /* x */, int /* y */ )
 			break;
 
 		case 's':			
-			int valShade;
+			GLint valShade;
 			glGetIntegerv(GL_SHADE_MODEL, &valShade);
 			if(valShade == GL_SMOOTH)
 				glShadeModel(GL_FLAT);
@@ -586,16 +619,13 @@ void keyboard( unsigned char key, int /* x */, int /* y */ )
 
 
 		case 'w':
-			int valWF;
+			//TODO : Works but provokes an error
+			GLint valWF;
 			glGetIntegerv(GL_POLYGON_MODE, &valWF);
 			if(valWF == GL_FILL)
-			{
-				//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-			}
+				glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 			else 
-			{
-				//glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-			}
+				glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 		break;
 
 		//Facteurs speculaire
