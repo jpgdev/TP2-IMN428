@@ -3,9 +3,9 @@
 
  TP2: Introduction a la modelisation et a l'illumination locale.
 
- Nom1: Jean-Philippe Goulet
- Nom2: Alex Nault
- Nom3: Charles-André Bouffard
+ Nom1: Jean-Philippe Goulet - 12 103 859
+ Nom2: Alex Nault - 12 073 221
+ Nom3: Charles-André Bouffard - 12 112 572
 
 */
 
@@ -183,23 +183,6 @@ void initMaterials()
 */
 void drawPlane( int n , bool displayNormals)
 {
-	/*
-	** AJOUTER CODE ICI
-	**
-	** Cette fonction affiche un plan entre -100 et 100 sur les axes X et Z.
-	** Le plan est positionne a Y = -100.
-	** Le plan est constitue de n*n quads (polygones a 4 sommets)
-	**
-	** Utilisez gMaterials[0].diffuse comme couleur (glColor4fv)
-	**
-	*/
-
-	/*Le plan est rendu à l’aide de la fonction drawPlane( int n ) qui affiche un plan de nn quads
-	(polygone à quatre sommets). Le plan est à la hauteur Y = -100 et s’étend de -100 à 100 le long des
-	axes X et Z. Sa normale doit être colinénaire à l’axe Y. La résolution du plan peut être modifiée à
-	l’aide des touches "a" et "A" du clavier.*/
-
-
 	glColor4fv(gMaterials[0].diffuse);
 
 	float size = 200.0/n;
@@ -231,6 +214,7 @@ void drawPlane( int n , bool displayNormals)
 	if (displayNormals)
 	{
 		glLineWidth(1);
+				
 		glBegin(GL_LINES);
 		for(int i = 0; i < n; i++)
 		{
@@ -285,16 +269,6 @@ void getNormalizedNormal(int index, GLfloat& nx, GLfloat& ny)
 void drawSweepObject(int resolution, bool displayNormals)
 {
 
-	/*
-	** AJOUTER CODE ICI
-	**
-	** Afficher la surface de translation de -200 a +200 le long de l'axe des Z
-	** a l'aide des "nbPointsOnSilhouette" contenus dans le tableau "silhouettePointArray"
-	**
-	** Utilisez gMaterials[1].diffuse comme couleur (glColor4fv)
-	**
-	*/
-
 	glColor4fv(gMaterials[1].diffuse);
 	float size = 400.0 / resolution;
 
@@ -340,6 +314,57 @@ void drawSweepObject(int resolution, bool displayNormals)
 			}
 		glEnd();
 
+		
+		if(displayNormals)
+		{
+			int scale = 10;
+			glBegin(GL_LINES);
+			for(int j = 0 ; j <= resolution; j++)
+			{
+				GLfloat normal1[3] = {
+					(nx + old_nx) / 2,
+					(ny + old_ny) / 2,
+					0};
+
+				GLfloat position1[3] = {
+					silhouettePointArray[i].x,
+					silhouettePointArray[i].y,
+					-200 + size*j};
+
+				//Le - est pour orienté les vecteurs normaux de l'autre sens
+				GLfloat newPos1[3] = {
+					position1[0] - scale * normal1[0],
+					position1[1] - scale * normal1[1],
+					position1[2] - scale * normal1[2]
+				};
+
+				glVertex3f(position1[0], position1[1], position1[2]);
+				glVertex3f(newPos1[0], newPos1[1], newPos1[2]);
+				
+				GLfloat normal2[3] = {
+					(nx + next_nx) / 2,
+					(ny + next_ny) / 2,
+					0};
+
+				GLfloat position2[3] = {
+					silhouettePointArray[i+1].x,
+					silhouettePointArray[i+1].y,
+					-200 + size*j};
+
+				//Le - est pour orienté les vecteurs normaux de l'autre sens
+				GLfloat newPos2[3] = {
+					position2[0] - scale * normal2[0],
+					position2[1] - scale * normal2[1],
+					position2[2] - scale * normal2[2]
+				};
+				
+				glVertex3f(position2[0], position2[1], position2[2]);
+				glVertex3f(newPos2[0], newPos2[1], newPos2[2]);
+			}
+			glEnd();
+
+		}
+
 		old_nx = nx;
 		old_ny = ny;
 	}
@@ -351,25 +376,15 @@ void drawSweepObject(int resolution, bool displayNormals)
 */
 void drawRevolutionObject(int resolution, bool displayNormals)
 {
-	/*
-	** AJOUTER CODE ICI
-	**
-	** Afficher la surface de revolution a l'aide des "nbPointsOnSilhouette"
-	** contenus dans le tableau "silhouettePointArray"
-	**
-	** utilisez gMaterials[1].diffuse comme couleur (glColor)
-	**
-	*/
+	//displayNormals n'est pas utilisé dans la solution, donc on ne l'a pas intégré
 
 	glColor4fv(gMaterials[1].diffuse);
-
 	
-	glBegin(GL_QUAD_STRIP);
 	double theta = deg2rad(360.0/resolution);
 
 	for(int i = 0; i < nbPointsOnSilhouette-1; i++)
 	{
-		
+		glBegin(GL_QUAD_STRIP);
 		for(int j = 0; j <= resolution; j++)
 		{			
 			int x =  silhouettePointArray[i].x;
@@ -387,10 +402,11 @@ void drawRevolutionObject(int resolution, bool displayNormals)
 				x2 * cos(theta * j) - x2 * sin(theta * j),
 				y2,
 				x2 * sin(theta * j) + x2 * cos(theta * j));
-		}		
+		}	
+		glEnd();
 	}
 
-	glEnd();
+	
 }
 
 /*
@@ -400,15 +416,6 @@ void drawObject()
 {
 	glPushMatrix();
 
-	/*
-	** AJOUTER CODE ICI
-	**
-	** Ajouter le code afin d'afficher le teapot
-	**
-	** utilisez gMaterials[1].diffuse comme couleur (glColor)
-	**
-	*/
-	
 	switch( CurrentAction )
 	{
 		case ActionSweep:
@@ -434,18 +441,7 @@ void drawObject()
 	Afficher les deux lumieres
 */
 void drawLights()
-{
-	/*
-	** AJOUTER CODE ICI
-	**
-	** Dessine chaque lumiere en utilisant sa composante diffuse
-	** comme couleur.  Utilisez la commande "glutSolideSphere" pour afficher
-	** les lumieres.
-	**
-	** Vous devez desactiver l'eclairage et le remettre dans son
-	** etat inital ensuite
-	*/
-
+{	
 	GLboolean isOn;
 	glGetBooleanv(GL_LIGHTING, &isOn);
 
@@ -455,14 +451,14 @@ void drawLights()
 	glColor3fv(gLights[0].diffuse);
 	glPushMatrix();
 		glTranslatef(gLights[0].position[0], gLights[0].position[1], gLights[0].position[2]);
-		glutSolidSphere(10,objectResolution,objectResolution);
+		glutSolidSphere(5,objectResolution,objectResolution);
 	glPopMatrix();
 
 
 	glColor3fv(gLights[1].diffuse);
 	glPushMatrix();
 		glTranslatef(gLights[1].position[0], gLights[1].position[1], gLights[1].position[2]);
-		glutSolidSphere(5,objectResolution,objectResolution);
+		glutSolidSphere(10,objectResolution,objectResolution);
 	glPopMatrix();
 
 	if(isOn) glEnable(GL_LIGHTING);
@@ -475,20 +471,6 @@ void drawLights()
 */
 void displayViewerWindow()
 {
-	/*
-	** AJOUTER CODE ICI
-	**
-	** Cette fonction est appelee a chaque fois que le contexte OpenGL est a rafraichir
-	**
-	** -Effacer l'ancien contenu (glClear)
-	** -Activer la pile GL_PROJECTION et preciser les parametres de projection (gluPerspective + gCam)
-	** -Activer la pile GL_MODELVIEW et positionner la camera (setCamera)
-	** -Afficher les lumieres (setLighting + drawLights)
-	** -Afficher le sol  (avec setMaterial + drawPlane())
-	** -Afficher l'objet (avec setMaterial +drawObject())
-	**
-	*/
-
 	/* Effacer l'ancien contenu */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
@@ -512,7 +494,7 @@ void displayViewerWindow()
 	drawPlane(objectResolution, drawNormals);
 	
 	/* Afficher l'objet avec le gMaterials[1] */
-	setMaterial(gMaterials[0]);
+	setMaterial(gMaterials[1]);
 	drawObject();
 
 	glutSwapBuffers();
@@ -526,7 +508,6 @@ void displayViewerWindow()
 */
 void displayModelerWindow(void)
 {
-	int i;
 	/* Configurer le "viewport" OpenGL. */
 	glViewport(0, 0, 500, 500);
 	glDisable(GL_LIGHTING);
