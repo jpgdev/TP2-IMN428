@@ -262,6 +262,21 @@ void drawPlane( int n , bool displayNormals)
 	}
 }
 
+/*
+	Retourne par effet de bord les coords. normalisées du
+	vector normal suivant l'index spécifié.
+*/
+void getNormalizedNormal(int index, GLfloat& nx, GLfloat& ny)
+{
+	GLfloat dy = silhouettePointArray[index+1].y - silhouettePointArray[index].y;
+	GLfloat dx = silhouettePointArray[index+1].x - silhouettePointArray[index].x;
+
+	nx = dy;
+	ny = -dx;
+	GLfloat length = sqrt((nx * nx) + (ny * ny));
+	nx /= length;
+	ny /= length;
+}
 
 /*
 	Fonction qui affiche silhouette sous la forme d'une
@@ -281,44 +296,53 @@ void drawSweepObject(int resolution, bool displayNormals)
 	*/
 
 	glColor4fv(gMaterials[1].diffuse);
-	
+	float size = 400.0 / resolution;
+
+	GLfloat nx;
+	GLfloat ny;
+
+	GLfloat old_nx;
+	GLfloat old_ny;
+
+	GLfloat next_nx;
+	GLfloat next_ny;
+
 	for(int i = 0; i < nbPointsOnSilhouette-1; i++)
 	{
-		glBegin(GL_QUAD_STRIP);
-
-		float size = 400.0 / resolution;
-		for(int j = 0 ; j <= resolution; j++)
+		if (i == 0) // premier vertex
 		{
-			glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200 + size*j);
-			glVertex3f(silhouettePointArray[i+1].x, silhouettePointArray[i+1].y, -200 + size*j);
+			getNormalizedNormal(i, nx, ny);
+
+			old_nx = nx;
+			old_ny = ny;
+
+			getNormalizedNormal(i+1, next_nx, next_ny);
 		}
-		glEnd();
-	}
-
-	//if(displayNormals)
-	//{
-		/*glLineWidth(1);
-		glBegin(GL_LINES);
-		for(int i = 1 ; i <= nbPointsOnSilhouette; i++)
+		else if (i == nbPointsOnSilhouette - 2) // dernier vertex
 		{
+			nx = next_nx;
+			ny = next_ny;
+		}
+		else // les vertex du centre
+		{
+			nx = next_nx;
+			ny = next_ny;
+			getNormalizedNormal(i+1, next_nx, next_ny);
+		}
+
+		glBegin(GL_QUAD_STRIP);
 			for(int j = 0 ; j <= resolution; j++)
 			{
-				GLfloat dy = silhouettePointArray[j].y - silhouettePointArray[j-1].y;
-				GLfloat dx = silhouettePointArray[j].x - silhouettePointArray[j-1].x;
-
-				GLfloat nx = dy;
-				GLfloat ny = -1 * dx;
-				GLfloat len = sqrt((nx * nx) + (ny * ny));
-				nx /= len;
-				ny /= len;
-		
-
-				glVertex3f(nx, ny, 0);
+				glNormal3d((nx + old_nx) / 2, (ny + old_ny) / 2, 0);
+				glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200 + size*j);
+				glNormal3d((nx + next_nx) / 2, (ny + next_ny) / 2, 0);
+				glVertex3f(silhouettePointArray[i+1].x, silhouettePointArray[i+1].y, -200 + size*j);
 			}
-			
-		}
-		glEnd();*/
-	//}
+		glEnd();
+
+		old_nx = nx;
+		old_ny = ny;
+	}
 }
 
 /*
