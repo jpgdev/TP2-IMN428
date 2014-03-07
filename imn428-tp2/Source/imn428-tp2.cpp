@@ -3,10 +3,10 @@
 
  TP2: Introduction a la modelisation et a l'illumination locale.
 
- Nom1:
- Nom2:
- Nom3:
- Nom4:
+ Nom1: Jean-Philippe Goulet
+ Nom2: Alex Nault
+ Nom3: Charles-André Bouffard
+
 */
 
 
@@ -295,43 +295,30 @@ void drawSweepObject(int resolution, bool displayNormals)
 		glEnd();
 	}
 
-
-
-	//float size = 400.0 / resolution;
-
-	//bool pair = true;
-
-	//for(int j = 0 ; j <= resolution; j++)
+	//if(displayNormals)
 	//{
-	//	glBegin(GL_QUAD_STRIP);
-	//			
-	//	if(pair)
-	//	{
-	//		for(int i = 0; i < nbPointsOnSilhouette-1; i++)
-	//		{
-	//			glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200 + size*j);
-	//			glVertex3f(silhouettePointArray[i+1].x, silhouettePointArray[i+1].y, -200 + size*j);
+		/*glLineWidth(1);
+		glBegin(GL_LINES);
+		for(int i = 1 ; i <= nbPointsOnSilhouette; i++)
+		{
+			for(int j = 0 ; j <= resolution; j++)
+			{
+				GLfloat dy = silhouettePointArray[j].y - silhouettePointArray[j-1].y;
+				GLfloat dx = silhouettePointArray[j].x - silhouettePointArray[j-1].x;
 
-	//		}
-	//	}
-	//	else
-	//	{
-	//		for(int i = nbPointsOnSilhouette; i < 0; i--)
-	//		{
-	//			glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200 + size*j);
-	//			glVertex3f(silhouettePointArray[i-1].x, silhouettePointArray[i-1].y, -200 + size*j);
-	//		}
+				GLfloat nx = dy;
+				GLfloat ny = -1 * dx;
+				GLfloat len = sqrt((nx * nx) + (ny * ny));
+				nx /= len;
+				ny /= len;
+		
 
-	//	}
-	//	/*glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200);
-	//	glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, 200);*/
-
-	//	pair = !pair;
-	//	glEnd();
-	//	
+				glVertex3f(nx, ny, 0);
+			}
+			
+		}
+		glEnd();*/
 	//}
-	
-
 }
 
 /*
@@ -397,9 +384,7 @@ void drawObject()
 	** utilisez gMaterials[1].diffuse comme couleur (glColor)
 	**
 	*/
-
 	
-
 	switch( CurrentAction )
 	{
 		case ActionSweep:
@@ -410,8 +395,10 @@ void drawObject()
 			break;
 		case ActionTeapot:
 			glFrontFace( GL_CW );
+			
 			glColor3fv(gMaterials[1].diffuse);
-			glutSolidTeapot(20);
+			glutSolidTeapot(50);
+
 			glFrontFace( GL_CCW );
 			break;
 
@@ -444,14 +431,14 @@ void drawLights()
 	glColor3fv(gLights[0].diffuse);
 	glPushMatrix();
 		glTranslatef(gLights[0].position[0], gLights[0].position[1], gLights[0].position[2]);
-		glutSolidSphere(10,50,50);
+		glutSolidSphere(10,objectResolution,objectResolution);
 	glPopMatrix();
 
 
 	glColor3fv(gLights[1].diffuse);
 	glPushMatrix();
 		glTranslatef(gLights[1].position[0], gLights[1].position[1], gLights[1].position[2]);
-		glutSolidSphere(5,40,40);
+		glutSolidSphere(5,objectResolution,objectResolution);
 	glPopMatrix();
 
 	if(isOn) glEnable(GL_LIGHTING);
