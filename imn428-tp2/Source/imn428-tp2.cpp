@@ -183,7 +183,6 @@ void initMaterials()
 */
 void drawPlane( int n , bool displayNormals)
 {
-
 	/*
 	** AJOUTER CODE ICI
 	**
@@ -195,31 +194,72 @@ void drawPlane( int n , bool displayNormals)
 	**
 	*/
 
-	//TODO: DISPLAY NORMALS
+	/*Le plan est rendu à l’aide de la fonction drawPlane( int n ) qui affiche un plan de nn quads
+	(polygone à quatre sommets). Le plan est à la hauteur Y = -100 et s’étend de -100 à 100 le long des
+	axes X et Z. Sa normale doit être colinénaire à l’axe Y. La résolution du plan peut être modifiée à
+	l’aide des touches "a" et "A" du clavier.*/
+
 
 	glColor4fv(gMaterials[0].diffuse);
 
 	float size = 200.0/n;
 
 	glBegin(GL_QUADS);
+	for(int i = 0; i < n; i++)
+	{
+		for(int j = 0; j < n; j++)
+		{
+			//TOP LEFT
+			glNormal3d(0, 1, 0);
+			glVertex4f(-100 + (size * i),  -100, 100 - (size * j),  1);
+
+			//TOP RIGHT
+			glNormal3d(0, 1, 0);
+			glVertex4f(-100 + (size * (i+1)), -100, 100 - (size * j),  1);
+
+			//BOTTOM RIGHT
+			glNormal3d(0, 1, 0);
+			glVertex4f(-100 + (size * (i+1)), -100, 100 - (size * (j+1)), 1);
+
+			//BOTTOM LEFT
+			glNormal3d(0, 1, 0);
+			glVertex4f(-100 + (size * i),  -100, 100 - (size * (j+1)), 1);
+		}
+	}
+	glEnd();
+
+	if (displayNormals)
+	{
+		glLineWidth(1);
+		glBegin(GL_LINES);
 		for(int i = 0; i < n; i++)
 		{
 			for(int j = 0; j < n; j++)
 			{
-				//TOP LEFT
-				glVertex4f(-100 + (size * i),		-100,	100 - (size * j),		1);
+				glVertex3f(-100 + (size * i), -100, 100 - (size * j));
+				glVertex3f(-100 + (size * i), -80, 100 - (size * j));
 
-				//TOP RIGHT
-				glVertex4f(-100 + (size * (i+1)),	-100,	100 - (size * j),		1);
+				if (i+1 >= n)
+				{
+					glVertex3f(-100 + (size * (i+1)), -100, 100 - (size * j));
+					glVertex3f(-100 + (size * (i+1)), -80, 100 - (size * j));
+				}
 
-				//BOTTOM RIGHT
-				glVertex4f(-100 + (size * (i+1)),	-100,	100 - (size * (j+1)),	1);
+				if (j+1 >= n)
+				{
+					glVertex3f(-100 + (size * i), -100, 100 - (size * (j+1)));
+					glVertex3f(-100 + (size * i), -80, 100 - (size * (j+1)));
+				}
 
-				//BOTTOM LEFT
-				glVertex4f(-100 + (size * i),		-100,	100 - (size * (j+1)),	1);
+				if ((i+1 >= n) && (j+1 >= n))
+				{
+					glVertex3f(-100 + (size * (i+1)), -100, 100 - (size * (j+1)));
+					glVertex3f(-100 + (size * (i+1)), -80, 100 - (size * (j+1)));
+				}
 			}
 		}
-	glEnd();
+		glEnd();
+	}
 }
 
 
@@ -252,12 +292,44 @@ void drawSweepObject(int resolution, bool displayNormals)
 			glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200 + size*j);
 			glVertex3f(silhouettePointArray[i+1].x, silhouettePointArray[i+1].y, -200 + size*j);
 		}
-		/*glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200);
-		glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, 200);*/
-
 		glEnd();
 	}
 
+
+
+	//float size = 400.0 / resolution;
+
+	//bool pair = true;
+
+	//for(int j = 0 ; j <= resolution; j++)
+	//{
+	//	glBegin(GL_QUAD_STRIP);
+	//			
+	//	if(pair)
+	//	{
+	//		for(int i = 0; i < nbPointsOnSilhouette-1; i++)
+	//		{
+	//			glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200 + size*j);
+	//			glVertex3f(silhouettePointArray[i+1].x, silhouettePointArray[i+1].y, -200 + size*j);
+
+	//		}
+	//	}
+	//	else
+	//	{
+	//		for(int i = nbPointsOnSilhouette; i < 0; i--)
+	//		{
+	//			glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200 + size*j);
+	//			glVertex3f(silhouettePointArray[i-1].x, silhouettePointArray[i-1].y, -200 + size*j);
+	//		}
+
+	//	}
+	//	/*glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200);
+	//	glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, 200);*/
+
+	//	pair = !pair;
+	//	glEnd();
+	//	
+	//}
 	
 
 }
@@ -280,31 +352,34 @@ void drawRevolutionObject(int resolution, bool displayNormals)
 
 	glColor4fv(gMaterials[1].diffuse);
 
-	//glBegin(GL_QUAD_STRIP);
+	
+	glBegin(GL_QUAD_STRIP);
+	double theta = deg2rad(360.0/resolution);
 
-	//for(int i = 0; i < nbPointsOnSilhouette-1; i++)
-	//{
-	//	for(int j = 0; j < resolution; j++)
-	//	{			
-	//		/*glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, -200);
-	//		glVertex3f(silhouettePointArray[i].x, silhouettePointArray[i].y, 200);*/
-	//	}
-	//	
-	//}
+	for(int i = 0; i < nbPointsOnSilhouette-1; i++)
+	{
+		
+		for(int j = 0; j <= resolution; j++)
+		{			
+			int x =  silhouettePointArray[i].x;
+			int y = silhouettePointArray[i].y;
 
-	//glEnd();
+			int x2 =  silhouettePointArray[i+1].x;
+			int y2 = silhouettePointArray[i+1].y;
 
-	static const double pi = 3.1416;
+			glVertex3f(
+				x * cos(theta * j) - x * sin(theta * j),
+				y,
+				x * sin(theta * j) + x * cos(theta * j));
 
-	for (int point=0; point<nbPointsOnSilhouette; point++) {
-		glBegin(GL_LINE_STRIP);
-		for (double theta = 0.0; theta <= 2.0 * pi; theta += pi/6.0) {
-			double x = cos(theta);
-			double z = sin(theta);
-			glVertex3d(silhouettePointArray[point].x*x, silhouettePointArray[point].y, -1.0-silhouettePointArray[point].x*z);
-		}
-		glEnd();
-	}  
+			glVertex3f(
+				x2 * cos(theta * j) - x2 * sin(theta * j),
+				y2,
+				x2 * sin(theta * j) + x2 * cos(theta * j));
+		}		
+	}
+
+	glEnd();
 }
 
 /*
